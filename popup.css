@@ -1,8 +1,23 @@
+html,
+body {
+  background-color: #effffd;
+  padding: 0.7rem;
+}
+
 .container {
   width: 400px;
-  min-height: 500px;
+  height: 500px;
+  background-color: #effffd;
+}
+
+.sub-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .h2 {
   text-align: center;
+  margin-left: 0.4rem;
+  font-size: 25px;
 }
