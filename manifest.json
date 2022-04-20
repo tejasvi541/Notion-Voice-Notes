@@ -10,5 +10,5 @@
       "32": "images/icon.png"
     }
   },
-  "permissions": []
+  "permissions": ["storage", "contextMenus"]
 }

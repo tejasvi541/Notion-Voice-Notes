@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; font-src 'self' data: fonts.gstatic.com;"
+    />
     <link rel="stylesheet" href="popup.css" />
     <title>Document</title>
   </head>
@@ -13,13 +17,16 @@
         <img width="50px" , height="50px" src="images/icon-512.png" />
         <h2 class="h2">Study Buddy</h2>
       </div>
+      <div class="content">
+        <button id="record-btn">Click Me</button>
+      </div>
       <div class="sub-div-footer">
         <!-- <h3 class="h3">Made With Love</h3> -->
         <a
           href="https://github.com/tejasvi541/Notion-Voice-Notes"
           target="_blank"
         >
-          <img class="hover" width="30px" height="30px" src="images/github.png"
+          <img class="hover" width="28px" height="28px" src="images/github.png"
         /></a>
       </div>
     </div>
