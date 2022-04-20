@@ -8,6 +8,7 @@ body {
   width: 400px;
   height: 500px;
   background-color: #effffd;
+  position: relative;
 }
 
 .sub-div {
@@ -20,4 +21,23 @@ body {
   text-align: center;
   margin-left: 0.4rem;
   font-size: 25px;
+}
+
+.sub-div-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.h3 {
+  text-align: center;
+}
+
+.hover:hover {
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
 }
