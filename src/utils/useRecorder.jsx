@@ -23,7 +23,9 @@ const useRecorder = () => {
 
     // Obtain the audio when ready.
     const handleData = (e) => {
-      setAudioURL(URL.createObjectURL(e.data));
+      console.log(e.data);
+      // setAudioURL(URL.createObjectURL(e.data));
+      setAudioURL(e.data);
     };
 
     recorder.addEventListener('dataavailable', handleData);

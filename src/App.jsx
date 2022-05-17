@@ -16,7 +16,47 @@ function App() {
       fetchAccessToken();
     }
   }, []);
+  // console.log(new File([audioURL], 'audio.wav'));
 
+  const sendAudio = async () => {
+    let fd = new FormData();
+    fd.append('file', audioURL);
+    // fd.append('data', audioURL);
+    axios
+      .post(`http://127.0.0.1:8000/speech`, fd)
+      .then(function (response) {
+        window.localStorage.setItem(
+          'token',
+          response?.data?.Response?.access_token
+        );
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    // var reader = new window.FileReader();
+    // reader.readAsDataURL(audioURL);
+    // reader.onloadend = function () {
+    //   var fd = new FormData();
+    //   base64data = reader.result;
+    //   fd.append('file', base64data, 'audio.wav');
+    //   axios
+    //     .post(`http://127.0.0.1:8000/speech`, {
+    //       file: fd,
+    //     })
+    //     .then(function (response) {
+    //       window.localStorage.setItem(
+    //         'token',
+    //         response?.data?.Response?.access_token
+    //       );
+    //     })
+    //     .catch(function (error) {
+    //       console.log(error);
+    //     });
+    // };
+  };
+
+  // console.log(audioURL);
   const fetchAccessToken = async () => {
     const code = params.get('code');
     if (!code) {
@@ -64,6 +104,7 @@ function App() {
           </button>
         </div>
       </div>
+      <button onClick={() => sendAudio()}> Send Audio</button>
       {/* {dbs.map((db) => (
 				<div
 					style={{
