@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import useRecorder from './utils/useRecorder';
 import './App.css';
+import axios from 'axios';
 
 // The OAuth client ID from the integration page!
 const oauth_client_id = '8d8bc085-e453-4630-8a3e-03e662398521';
@@ -8,18 +9,33 @@ const oauth_client_id = '8d8bc085-e453-4630-8a3e-03e662398521';
 function App() {
   let [audioURL, isRecording, startRecording, stopRecording] = useRecorder();
   const [dbs, setdbs] = useState([]);
-
+  const params = new URL(window.document.location).searchParams;
   // When you open the app, this doesn't do anything, but after you sign into Notion, you'll be redirected back with a code at which point we call our backend.
   useEffect(() => {
-    const params = new URL(window.document.location).searchParams;
-    const code = params.get('code');
-    if (!code) return;
-    fetch(`http://127.0.0.1:8000/login/${code}`).then(async (resp) => {
-      setdbs(await resp.json());
-    });
+    if (params) {
+      fetchAccessToken();
+    }
   }, []);
-  console.log(dbs);
-  console.log(audioURL);
+
+  const fetchAccessToken = async () => {
+    const code = params.get('code');
+    if (!code) {
+      return;
+    } else {
+      axios
+        .get(`http://127.0.0.1:8000/login/${code}`)
+        .then(function (response) {
+          window.localStorage.setItem(
+            'token',
+            response?.data?.Response?.access_token
+          );
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+  };
+
   return (
     <div className="App">
       <h2 className="heading"> Studdy Buddy</h2>
