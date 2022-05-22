@@ -2,8 +2,8 @@
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  /* justify-content: center; */
+  /* align-items: center; */
 }
 
 .heading {
@@ -56,6 +56,28 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.navbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 60px;
+  width: '100%';
+}
+
+.nav-item {
+  color: '#FF6363';
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  margin: 1rem;
+  font-size: 20px;
+}
+
+.nav-item:hover {
+  cursor: pointer;
 }
 
 @keyframes App-logo-spin {
