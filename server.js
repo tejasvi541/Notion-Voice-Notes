@@ -9,11 +9,15 @@ const connectDB = require("./config/db");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const colors = require("colors");
+const errorHandler = require("./middleware/error");
 
 // Load env vars
 dotenv.config({ path: "./config/config.env" });
 
 connectDB();
+
+// Route Files
+const auth = require("./routes/auth");
 
 // Initialise app
 
@@ -49,6 +53,13 @@ app.use(cors());
 
 // Set static folder
 app.use(express.static(path.join(__dirname, "public")));
+
+// ================Mount routes=====================
+app.use("/api/v1/auth", auth);
+
+// Error handler middleware (Should be after mounting routes as otherwise it will not be able to
+// errors otherwise)
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(
