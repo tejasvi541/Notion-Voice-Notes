@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const NoteSchema = new mongoose.Schema({
 	user: {
-		type: Schema.Types.ObjectId,
+		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",
 	},
 
@@ -13,6 +13,7 @@ const NoteSchema = new mongoose.Schema({
 
 	link: {
 		type: String,
+		default: "",
 	},
 
 	createdAt: {

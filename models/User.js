@@ -17,21 +17,12 @@ const UserSchema = new mongoose.Schema({
 			"Please add a valid Email",
 		],
 	},
-	// password: {
-	// 	type: String,
-	// 	required: [true, "Please add a password"],
-	// 	minlength: 6,
-	// 	select: false,
-	// },
-
-	// resetPasswordToken: {
-	// 	type: String,
-	// },
-	// resetPasswordExpire: Date,
-	// createdAt: {
-	// 	type: Date,
-	// 	default: Date.now(),
-	// },
+	password: {
+		type: String,
+		required: [true, "Please add a password"],
+		minlength: 6,
+		select: false,
+	},
 });
 
 // Encrypt Password using bcrypt
@@ -55,22 +46,5 @@ UserSchema.methods.getSignedJwtToken = function () {
 UserSchema.methods.matchPassword = async function (enteredPassword) {
 	return await bcrypt.compare(enteredPassword, this.password);
 };
-
-// // Generate and Hash Password token
-// UserSchema.methods.getResetPasswordToken = function () {
-// 	// Generate token
-// 	const resetToken = crypto.randomBytes(20).toString("hex");
-
-// 	// Hash Token and set to resetPasswordToken field
-// 	this.resetPasswordToken = crypto
-// 		.createHash("sha256")
-// 		.update(resetToken)
-// 		.digest("hex");
-
-// 	// Set the expire
-// 	this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
-
-// 	return resetToken;
-// };
 
 module.exports = mongoose.model("User", UserSchema);

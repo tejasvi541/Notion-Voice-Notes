@@ -11,20 +11,21 @@ const path = require("path");
 const colors = require("colors");
 const errorHandler = require("./middleware/error");
 
+// Route Files
+const auth = require("./routes/auth");
+const note = require("./routes/note");
 // Load env vars
 dotenv.config({ path: "./config/config.env" });
 
 connectDB();
 
-// Route Files
-const auth = require("./routes/auth");
-
-// Initialise app
+// // Initialise app
 
 const app = express();
 
-// Body Parser
-app.use(express.json);
+app.use(express.urlencoded({ extended: false }));
+// // Body Parser
+app.use(express.json());
 
 // Cookie Parser
 app.use(cookieParser());
@@ -55,13 +56,19 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 
 // ================Mount routes=====================
+app.get("/", (req, res, next) => {
+	console.log(`${req.method}\t${req.headers.origin}\t${req.url}`);
+
+	res.send("HELLO");
+});
 app.use("/api/v1/auth", auth);
+app.use("/api/v1/note", note);
 
 // Error handler middleware (Should be after mounting routes as otherwise it will not be able to
 // errors otherwise)
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4500;
 const server = app.listen(
 	PORT,
 	console.log(
