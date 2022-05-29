@@ -86,7 +86,7 @@ exports.getNote = asyncHandler(async (req, res, next) => {
 // @desc        Delete Note by id
 // @access      Private
 
-exports.deleteNote = asyncHandler(async (req, res, next) => {
+exports.updateNote = asyncHandler(async (req, res, next) => {
 	try {
 		const note = await Note.findById(req.params.id);
 
