@@ -1,26 +1,31 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
-const xssClean = require('xss-clean');
-const cors = require('cors');
-const morgan = require('morgan');
-const connectDB = require('./config/db');
-const cookieParser = require('cookie-parser');
-const path = require('path');
-const colors = require('colors');
+const express = require("express");
+const dotenv = require("dotenv");
+const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("express-mongo-sanitize");
+const xssClean = require("xss-clean");
+const cors = require("cors");
+const morgan = require("morgan");
+const connectDB = require("./config/db");
+const cookieParser = require("cookie-parser");
+const path = require("path");
+const colors = require("colors");
+const errorHandler = require("./middleware/error");
 
+// Route Files
+const auth = require("./routes/auth");
+const note = require("./routes/note");
 // Load env vars
 dotenv.config({ path: './config/config.env' });
 
 // connectDB();
 
-// Initialise app
+// // Initialise app
 
 const app = express();
 
-// Body Parser
-app.use(express.json);
+app.use(express.urlencoded({ extended: false }));
+// // Body Parser
+app.use(express.json());
 
 // Cookie Parser
 app.use(cookieParser());
@@ -54,9 +59,32 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`);
+// ================Mount routes=====================
+app.get("/", (req, res, next) => {
+	console.log(`${req.method}\t${req.headers.origin}\t${req.url}`);
+
+	res.send("HELLO");
+});
+app.use("/api/v1/auth", auth);
+app.use("/api/v1/note", note);
+
+// Error handler middleware (Should be after mounting routes as otherwise it will not be able to
+// errors otherwise)
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 4500;
+const server = app.listen(
+	PORT,
+	console.log(
+		`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold
+	)
+);
+
+// Handel unhandelled promise rejections
+process.on("unhandledRejection", (err) => {
+	console.log(`Error : ${err.message}`.red);
+	// Close Server & Exit process
+	server.close(() => process.exit(1));
 });
 // const server = app.listen(
 //   PORT,
