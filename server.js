@@ -17,7 +17,7 @@ const note = require("./routes/note");
 // Load env vars
 dotenv.config({ path: './config/config.env' });
 
-// connectDB();
+connectDB();
 
 // // Initialise app
 
