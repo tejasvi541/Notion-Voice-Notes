@@ -3,8 +3,12 @@ import React from 'react';
 import SpeechRecognition, {
   useSpeechRecognition,
 } from 'react-speech-recognition';
+import { ToastContainer, toast } from 'react-toastify';
+import { postNote } from '../api';
+import { setAuthToken } from '../utils';
 
-function MainActivity() {
+function MainActivity(props) {
+  const { setNotes } = props;
   const {
     transcript,
     listening,
@@ -15,10 +19,27 @@ function MainActivity() {
   const startListening = () =>
     SpeechRecognition.startListening({ continuous: true });
 
-  const sendHandler = () => {};
+  const sendHandler = async () => {
+    if (transcript.length <= 0) {
+      toast.error('Nothing to save !');
+      return;
+    }
+    try {
+      if (localStorage.getItem('SB-token')) {
+        setAuthToken(localStorage.getItem('SB-token'));
+      }
+      const { data } = await postNote({ text: transcript });
+      if (data.success) {
+        console.log(data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <Card style={{ width: '90%', padding: '0.5rem' }}>
+      <ToastContainer position="top-right" />
       <div>
         <i>
           <p
@@ -65,20 +86,11 @@ function MainActivity() {
         {transcript.trim() !== '' ? (
           <Button
             style={{ backgroundColor: '#EEEEEE', margin: '0.5rem' }}
-            onClick={sendHandler()}
+            onClick={() => sendHandler()}
           >
             Send
           </Button>
         ) : null}
-        {/* <i>
-          <p
-            style={{
-              color: '#FF8C8C',
-            }}
-          >
-            <p>{transcript}</p>
-          </p>
-        </i> */}
       </div>
     </Card>
   );

@@ -24,12 +24,17 @@ function NotesCard(props) {
         display: 'flex',
         justifyContent: 'space-between',
         alingItems: 'center',
-        width: '100%',
+        width: '90%',
         padding: '0.5rem',
+        border: 'solid 1px grey',
+        borderRadius: '6px',
+        margin: '0.7rem',
       }}
     >
       <h3 style={{ margin: 0, padding: 0 }}>{text}</h3>
-      <h5 style={{ margin: 0, padding: 0 , color : 'grey' }}>{moment(createdAt).fromNow()}</h5>
+      <h5 style={{ margin: 0, padding: 0, color: 'grey' }}>
+        {moment(createdAt).fromNow()}
+      </h5>
     </div>
   );
 }

@@ -113,7 +113,7 @@ function MainLayout() {
       }
       const { data } = await getNotes();
       if (data.success) {
-        setUserNotes(data.data)
+        setUserNotes(data.data);
       }
     } catch (err) {
       console.log(err);
@@ -125,7 +125,7 @@ function MainLayout() {
       case `Let's Try`:
         return (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <MainActivity />
+            <MainActivity setNotes={setUserNotes} />
           </div>
         );
       case `Your Notes`:

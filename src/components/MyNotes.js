@@ -5,7 +5,17 @@ import NotesCard from './NotesCard';
 function MyNotes(props) {
   const { notes } = props;
   return (
-    <Card style={{ width: '70%', padding: '1rem', margin: '1rem' }}>
+    <Card
+      style={{
+        width: '70%',
+        margin: '1rem',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '1rem',
+      }}
+    >
       {notes.length <= 0 ? (
         'No Notes'
       ) : (
