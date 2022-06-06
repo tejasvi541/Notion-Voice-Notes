@@ -110,7 +110,6 @@ function App() {
   const params = new URL(window.document.location).searchParams;
 
   useEffect(() => {
-    debugger;
     if (
       localStorage.getItem('SB-token') &&
       localStorage.getItem('SB-username')

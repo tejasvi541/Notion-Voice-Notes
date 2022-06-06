@@ -1,5 +1,12 @@
-import { Button, Card, TextField } from '@material-ui/core';
-import React from 'react';
+import {
+  Button,
+  Card,
+  TextField,
+  Switch,
+  FormControl,
+  FormControlLabel,
+} from '@material-ui/core';
+import React, { useState } from 'react';
 import SpeechRecognition, {
   useSpeechRecognition,
 } from 'react-speech-recognition';
@@ -9,6 +16,7 @@ import { setAuthToken } from '../utils';
 
 function MainActivity(props) {
   const { setNotes } = props;
+  const [withLink, setWithLink] = useState({ text: '', isLink: false });
   const {
     transcript,
     listening,
@@ -28,7 +36,10 @@ function MainActivity(props) {
       if (localStorage.getItem('SB-token')) {
         setAuthToken(localStorage.getItem('SB-token'));
       }
-      const { data } = await postNote({ text: transcript });
+      const { data } = await postNote({
+        text: transcript,
+        link: withLink.isLink ? withLink.text : '',
+      });
       if (data.success) {
         console.log(data);
       }
@@ -36,6 +47,12 @@ function MainActivity(props) {
       console.log(err);
     }
   };
+
+  const handleChangeWithLink = (event) => {
+    setWithLink({ ...withLink, isLink: event.target.checked });
+  };
+
+  console.log(withLink);
 
   return (
     <Card style={{ width: '90%', padding: '0.5rem' }}>
@@ -82,6 +99,31 @@ function MainActivity(props) {
             }}
             disabled
           />
+        </div>
+        <div>
+          <FormControl>
+            Add Link
+            <Switch
+              checked={withLink.isLink}
+              onChange={handleChangeWithLink}
+              color="primary"
+              name="checkedB"
+              inputProps={{ 'aria-label': 'primary checkbox' }}
+            />
+            {withLink.isLink ? (
+              <TextField
+                label="Link Text"
+                variant="outlined"
+                placeholder="Link Text"
+                type="text"
+                margin="normal"
+                value={withLink.text}
+                onChange={(e) => {
+                  setWithLink({ ...withLink, text: e.target.value });
+                }}
+              />
+            ) : null}
+          </FormControl>
         </div>
         {transcript.trim() !== '' ? (
           <Button
