@@ -20,6 +20,9 @@ import {
   Box,
 } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { login, register } from './api';
 
 const AntTabs = withStyles({
   root: {
@@ -95,7 +98,7 @@ function App() {
     SpeechRecognition.startListening({ continuous: true });
 
   const [dbs, setdbs] = useState([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({ name: '', isUser: false });
   const [tabValue, setTabValue] = useState(`Sign In`);
   const [signInData, setsingInData] = useState({ email: '', password: '' });
   const [signUpData, setsingUpData] = useState({
@@ -105,6 +108,16 @@ function App() {
   });
 
   const params = new URL(window.document.location).searchParams;
+
+  useEffect(() => {
+    debugger;
+    if (
+      localStorage.getItem('SB-token') &&
+      localStorage.getItem('SB-username')
+    ) {
+      setUser({ name: localStorage.getItem('SB-username'), isUser: true });
+    }
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -137,50 +150,7 @@ function App() {
       });
   };
 
-  useEffect(() => {
-    fetchAccessToken();
-    if (
-      window.localStorage.getItem('token') &&
-      window.localStorage.getItem('user')
-    ) {
-      setUser(JSON.parse(localStorage.getItem('user'))?.name);
-    }
-  }, []);
   console.log(user);
-
-  const fetchAccessToken = async () => {
-    const code = params.get('code');
-    if (!code) {
-      return;
-    } else {
-      await axios
-        .get(`http://127.0.0.1:8000/login/${code}`)
-        .then(function (response) {
-          if (response.data.Response.error) {
-            console.log('i');
-            return;
-          }
-          if (response.data.Response) {
-            window.localStorage.setItem(
-              'token',
-              response?.data?.Response?.access_token
-            );
-            window.localStorage.setItem(
-              'user',
-              JSON.stringify({
-                name: response?.data?.Response?.owner?.user?.name,
-                avatar: response?.data?.Response?.owner?.user?.avatar_id,
-              })
-            );
-            setUser(response?.data?.Response?.owner?.user?.name);
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      window.history.replaceState({}, '', `${window.location.pathname}`);
-    }
-  };
 
   if (!browserSupportsSpeechRecognition) {
     console.log(`Browser doesn't support speech recognition.`);
@@ -191,9 +161,9 @@ function App() {
   }, [listening]);
 
   const logoutHandler = () => {
-    window.localStorage.setItem('token', null);
-    window.localStorage.setItem('user', null);
-    setUser(null);
+    window.localStorage.removeItem('SB-token');
+    window.localStorage.removeItem('SB-username');
+    setUser({ name: '', isUser: false });
   };
 
   const renderTabContent = () => {
@@ -227,7 +197,12 @@ function App() {
                   });
                 }}
               />
-              <Button onClick={() => SignInHandler()}>Sing In</Button>
+              <Button
+                style={{ backgroundColor: '#EEEEEE' }}
+                onClick={() => SignInHandler()}
+              >
+                Sing In
+              </Button>
             </FormControl>
           </>
         );
@@ -277,7 +252,12 @@ function App() {
                 }}
               />
 
-              <Button onClick={() => SignUpHandler()}>Sing Up</Button>
+              <Button
+                style={{ backgroundColor: '#EEEEEE' }}
+                onClick={() => SignUpHandler()}
+              >
+                Sing Up
+              </Button>
             </FormControl>
           </>
         );
@@ -287,22 +267,57 @@ function App() {
   };
 
   const SignInHandler = async () => {
-    console.log(signInData);
+    if (signInData.email === '' || signInData.password.trim() === '') {
+      toast.error('Enter Valid Details');
+      return;
+    }
+    try {
+      const { data } = await login(signInData);
+      if (data.success) {
+        localStorage.setItem('SB-token', data.token);
+        localStorage.setItem('SB-username', data.user.name);
+        toast.success('User Logined Successfully');
+        setUser({ name: data.user.name, isUser: true });
+      }
+    } catch (err) {
+      toast.error(err.response.data.error);
+      setUser({ name: '', isUser: false });
+    }
   };
 
   const SignUpHandler = async () => {
-    console.log(signUpData);
+    if (
+      signUpData.email.trim() === '' ||
+      signUpData.name.trim() === '' ||
+      signUpData.password.trim() === ''
+    ) {
+      toast.error('Enter Valid Details');
+      return;
+    }
+    try {
+      const { data } = await register(signUpData);
+      if (data.success) {
+        localStorage.setItem('SB-token', data.token);
+        toast.success('User Registered Successfully');
+        localStorage.setItem('SB-username', data.user.name);
+        setUser({ name: data.user.name, isUser: true });
+      }
+    } catch (err) {
+      toast.error(err.response.data.error);
+      setUser({ name: '', isUser: false });
+    }
   };
 
   return (
     <div className="App">
-      {user ? (
+      <ToastContainer position="top-right" />
+      {user?.isUser ? (
         <>
           <div className="navbar">
             <div>
               <h3 style={{ color: '#FF6363' }} className="nav-item">
                 {' '}
-                Welcome {user}
+                Welcome {user.name}
               </h3>
               <h3
                 style={{ color: '#FF6363' }}
@@ -318,77 +333,6 @@ function App() {
           <div>
             <MainLayout />
           </div>
-          {/* <div>
-            <i>
-              <p
-                style={{
-                  color: 'white',
-                }}
-              >
-                Microphone: {listening ? 'on' : 'off'}
-              </p>
-            </i>
-            <button
-              style={{
-                display: 'inline-block',
-                color: 'white',
-                backgroundColor: '#FF5D5D',
-                padding: '0.4rem',
-                borderRadius: '0.4rem',
-                marginTop: '1rem',
-                width: '150px',
-                margin: '0.5rem',
-                fontSize: '18px',
-              }}
-              className="btns"
-              onClick={startListening}
-            >
-              Start
-            </button>
-            <button
-              style={{
-                display: 'inline-block',
-                color: 'white',
-                backgroundColor: '#FF5D5D',
-                padding: '0.4rem',
-                borderRadius: '0.4rem',
-                marginTop: '1rem',
-                width: '150px',
-                margin: '0.5rem',
-                fontSize: '18px',
-              }}
-              className="btns"
-              onClick={SpeechRecognition.stopListening}
-            >
-              Stop
-            </button>
-            <button
-              style={{
-                display: 'inline-block',
-                color: 'white',
-                backgroundColor: '#FF5D5D',
-                padding: '0.4rem',
-                borderRadius: '0.4rem',
-                marginTop: '1rem',
-                width: '150px',
-                margin: '0.5rem',
-                fontSize: '18px',
-              }}
-              className="btns"
-              onClick={resetTranscript}
-            >
-              Reset
-            </button>
-            <i>
-              <p
-                style={{
-                  color: '#FF8C8C',
-                }}
-              >
-                <p>{transcript}</p>
-              </p>
-            </i>
-          </div> */}
         </>
       ) : (
         <div>
@@ -406,7 +350,7 @@ function App() {
             <Card
               style={{
                 marginTop: '1rem',
-                width: '80%',
+                width: '40%',
                 padding: '1rem',
                 display: 'inline-block',
               }}
@@ -428,6 +372,9 @@ function App() {
           </div>
         </div>
       )}
+      {/* <div>
+        <MainLayout />
+      </div> */}
     </div>
   );
 }

@@ -14,6 +14,10 @@ import {
   Box,
 } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import MainActivity from './components/MainActivity';
+import MyNotes from './components/MyNotes';
+import { getNotes } from './api';
+import { setAuthToken } from './utils';
 
 const AntTabs = withStyles({
   root: {
@@ -82,6 +86,7 @@ const tabContent = [
 
 function MainLayout() {
   const [tabValue, setTabValue] = useState(`Let's Try`);
+  const [userNotes, setUserNotes] = useState([]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -95,12 +100,40 @@ function MainLayout() {
     );
   };
 
+  useEffect(() => {
+    if (tabValue === 'Your Notes') {
+      fetchUserNotes();
+    }
+  }, [tabValue]);
+
+  const fetchUserNotes = async () => {
+    try {
+      if (localStorage.getItem('SB-token')) {
+        setAuthToken(localStorage.getItem('SB-token'));
+      }
+      const { data } = await getNotes();
+      if (data.success) {
+        setUserNotes(data.data)
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const renderTabContent = () => {
     switch (tabValue) {
       case `Let's Try`:
-        return <p>Let's Try</p>;
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <MainActivity />
+          </div>
+        );
       case `Your Notes`:
-        return <p>Your Notes</p>;
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <MyNotes notes={userNotes} />
+          </div>
+        );
       default:
         return '';
     }
@@ -118,6 +151,7 @@ function MainLayout() {
           return <AntTab key={index} value={item.value} label={item.label} />;
         })}
       </AntTabs>
+      <div style={{ marginTop: '1rem' }}>{renderTabContent()}</div>
     </div>
   );
 }
