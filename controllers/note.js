@@ -1,7 +1,8 @@
-const ErrorResponse = require("../utils/errorResponse");
-const asyncHandler = require("../middleware/async");
-const User = require("../models/User");
-const Note = require("../models/Note");
+const ErrorResponse = require('../utils/errorResponse');
+const asyncHandler = require('../middleware/async');
+const User = require('../models/User');
+const Note = require('../models/Note');
+const mongoose = require('mongoose');
 
 // ===================================== Post Note ========================================//
 
@@ -10,19 +11,19 @@ const Note = require("../models/Note");
 // @access      Private
 
 exports.postNote = asyncHandler(async (req, res, next) => {
-	const { text, link } = req.body;
-	const user = await User.findById(req.user.id).select("-password");
-	// Create user
-	const note = await Note.create({
-		user,
-		text,
-		link,
-	});
+  const { text, link } = req.body;
+  const user = await User.findById(req.user.id).select('-password');
+  // Create user
+  const note = await Note.create({
+    user,
+    text,
+    link,
+  });
 
-	res.status(200).json({
-		success: true,
-		data: note,
-	});
+  res.status(200).json({
+    success: true,
+    data: note,
+  });
 });
 
 // ===================================== Get Notes ========================================//
@@ -32,25 +33,25 @@ exports.postNote = asyncHandler(async (req, res, next) => {
 // @access      Private
 
 exports.getNotes = asyncHandler(async (req, res, next) => {
-	try {
-		const notes = await Note.find().sort({ date: -1 });
+  try {
+    const notes = await Note.find().sort({ date: -1 });
 
-		if (!notes) {
-			res.status(404).json({ msg: "Note not found" });
-		}
-		res.status(200).json({
-			success: true,
-			data: notes,
-		});
-	} catch (err) {
-		console.error(err.message);
+    if (!notes) {
+      res.status(404).json({ msg: 'Note not found' });
+    }
+    res.status(200).json({
+      success: true,
+      data: notes,
+    });
+  } catch (err) {
+    console.error(err.message);
 
-		if (err.kind === "ObjectId") {
-			res.status(404).json({ msg: "Notes not found" });
-		}
+    if (err.kind === 'ObjectId') {
+      res.status(404).json({ msg: 'Notes not found' });
+    }
 
-		res.status(500).send("Server Error");
-	}
+    res.status(500).send('Server Error');
+  }
 });
 
 // ===================================== Get Note ========================================//
@@ -60,25 +61,26 @@ exports.getNotes = asyncHandler(async (req, res, next) => {
 // @access      Private
 
 exports.getNote = asyncHandler(async (req, res, next) => {
-	try {
-		const note = await Note.findById(req.params.id);
+  try {
+    const note = await Note.find({
+      user: mongoose.Types.ObjectId(req.params.id),
+    });
+    if (!note) {
+      res.status(404).json({ msg: 'Note not found' });
+    }
+    res.status(200).json({
+      success: true,
+      data: note,
+    });
+  } catch (err) {
+    console.error(err.message);
 
-		if (!note) {
-			res.status(404).json({ msg: "Note not found" });
-		}
-		res.status(200).json({
-			success: true,
-			data: note,
-		});
-	} catch (err) {
-		console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      res.status(404).json({ msg: 'Note not found' });
+    }
 
-		if (err.kind === "ObjectId") {
-			res.status(404).json({ msg: "Note not found" });
-		}
-
-		res.status(500).send("Server Error");
-	}
+    res.status(500).send('Server Error');
+  }
 });
 
 //==================================== Delete Note by id Route =========================//
@@ -87,29 +89,29 @@ exports.getNote = asyncHandler(async (req, res, next) => {
 // @access      Private
 
 exports.updateNote = asyncHandler(async (req, res, next) => {
-	try {
-		const note = await Note.findById(req.params.id);
+  try {
+    const note = await Note.findById(req.params.id);
 
-		if (!note) {
-			res.status(404).json({ msg: "Note not found" });
-		}
+    if (!note) {
+      res.status(404).json({ msg: 'Note not found' });
+    }
 
-		//Check user
-		if (note.user.toString() !== req.user.id) {
-			return res.status(401).json({ msg: "User not Authorized" });
-		}
-		await note.remove();
+    //Check user
+    if (note.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not Authorized' });
+    }
+    await note.remove();
 
-		res.status(200).json({ msg: "Note Removed" });
-	} catch (err) {
-		console.error(err.message);
+    res.status(200).json({ msg: 'Note Removed' });
+  } catch (err) {
+    console.error(err.message);
 
-		if (err.kind === "ObjectId") {
-			res.status(404).json({ msg: "Note not found" });
-		}
+    if (err.kind === 'ObjectId') {
+      res.status(404).json({ msg: 'Note not found' });
+    }
 
-		res.status(500).send("Server Error");
-	}
+    res.status(500).send('Server Error');
+  }
 });
 
 //==================================== Update Note by id Route =========================//
@@ -118,36 +120,36 @@ exports.updateNote = asyncHandler(async (req, res, next) => {
 // @access      Private
 
 exports.deleteNote = asyncHandler(async (req, res, next) => {
-	try {
-		const note = await Note.findById(req.params.id);
+  try {
+    const note = await Note.findById(req.params.id);
 
-		if (!note) {
-			res.status(404).json({ msg: "Note not found" });
-		}
+    if (!note) {
+      res.status(404).json({ msg: 'Note not found' });
+    }
 
-		//Check user
-		if (note.user.toString() !== req.user.id) {
-			return res.status(401).json({ msg: "User not Authorized" });
-		}
+    //Check user
+    if (note.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not Authorized' });
+    }
 
-		const { text, link } = req.body;
+    const { text, link } = req.body;
 
-		note.text = text;
-		note.link = link;
+    note.text = text;
+    note.link = link;
 
-		await note.save();
+    await note.save();
 
-		res.status(200).json({
-			success: true,
-			data: note,
-		});
-	} catch (err) {
-		console.error(err.message);
+    res.status(200).json({
+      success: true,
+      data: note,
+    });
+  } catch (err) {
+    console.error(err.message);
 
-		if (err.kind === "ObjectId") {
-			res.status(404).json({ msg: "Note not found" });
-		}
+    if (err.kind === 'ObjectId') {
+      res.status(404).json({ msg: 'Note not found' });
+    }
 
-		res.status(500).send("Server Error");
-	}
+    res.status(500).send('Server Error');
+  }
 });
