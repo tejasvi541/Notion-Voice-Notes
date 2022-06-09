@@ -84,7 +84,8 @@ const tabContent = [
   },
 ];
 
-function MainLayout() {
+function MainLayout(props) {
+  const { id } = props;
   const [tabValue, setTabValue] = useState(`Let's Try`);
   const [userNotes, setUserNotes] = useState([]);
 
@@ -111,9 +112,9 @@ function MainLayout() {
       if (localStorage.getItem('SB-token')) {
         setAuthToken(localStorage.getItem('SB-token'));
       }
-      const { data } = await getNotes();
+      const { data } = await getNotes(id);
       if (data.success) {
-        setUserNotes(data.data);
+        setUserNotes(data.data.reverse());
       }
     } catch (err) {
       console.log(err);

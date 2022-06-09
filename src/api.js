@@ -15,6 +15,6 @@ export const server = axios.create({
 export const login = (data) => server.post(`${url}/api/v1/auth/login`, data);
 export const register = (data) =>
   server.post(`${url}/api/v1/auth/register`, data);
-export const getNotes = () => server.get(`${url}/api/v1/note/getNotes`);
+export const getNotes = (id) => server.get(`${url}/api/v1/note/getNote/${id}`);
 export const postNote = (data) =>
   server.post(`${url}/api/v1/note/postNote`, data);

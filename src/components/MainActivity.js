@@ -42,17 +42,17 @@ function MainActivity(props) {
       });
       if (data.success) {
         console.log(data);
+        toast.success('Note saved successfully');
       }
     } catch (err) {
       console.log(err);
+      toast.error('Note saving error');
     }
   };
 
   const handleChangeWithLink = (event) => {
     setWithLink({ ...withLink, isLink: event.target.checked });
   };
-
-  console.log(withLink);
 
   return (
     <Card style={{ width: '90%', padding: '0.5rem' }}>

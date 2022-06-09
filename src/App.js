@@ -98,7 +98,7 @@ function App() {
     SpeechRecognition.startListening({ continuous: true });
 
   const [dbs, setdbs] = useState([]);
-  const [user, setUser] = useState({ name: '', isUser: false });
+  const [user, setUser] = useState({ name: '', isUser: false, id: null });
   const [tabValue, setTabValue] = useState(`Sign In`);
   const [signInData, setsingInData] = useState({ email: '', password: '' });
   const [signUpData, setsingUpData] = useState({
@@ -112,9 +112,14 @@ function App() {
   useEffect(() => {
     if (
       localStorage.getItem('SB-token') &&
-      localStorage.getItem('SB-username')
+      localStorage.getItem('SB-username') &&
+      localStorage.getItem('SB-userID')
     ) {
-      setUser({ name: localStorage.getItem('SB-username'), isUser: true });
+      setUser({
+        name: localStorage.getItem('SB-username'),
+        isUser: true,
+        id: localStorage.getItem('SB-userID'),
+      });
     }
   }, []);
 
@@ -162,7 +167,8 @@ function App() {
   const logoutHandler = () => {
     window.localStorage.removeItem('SB-token');
     window.localStorage.removeItem('SB-username');
-    setUser({ name: '', isUser: false });
+    window.localStorage.removeItem('SB-userId');
+    setUser({ name: '', isUser: false, id: null });
   };
 
   const renderTabContent = () => {
@@ -275,12 +281,13 @@ function App() {
       if (data.success) {
         localStorage.setItem('SB-token', data.token);
         localStorage.setItem('SB-username', data.user.name);
+        localStorage.setItem('SB-userID', data.user._id);
         toast.success('User Logined Successfully');
-        setUser({ name: data.user.name, isUser: true });
+        setUser({ name: data.user.name, isUser: true, id: data.user._id });
       }
     } catch (err) {
       toast.error(err.response.data.error);
-      setUser({ name: '', isUser: false });
+      setUser({ name: '', isUser: false, id: null });
     }
   };
 
@@ -299,11 +306,12 @@ function App() {
         localStorage.setItem('SB-token', data.token);
         toast.success('User Registered Successfully');
         localStorage.setItem('SB-username', data.user.name);
-        setUser({ name: data.user.name, isUser: true });
+        localStorage.setItem('SB-userID', data.user._id);
+        setUser({ name: data.user.name, isUser: true, id: data.user._id });
       }
     } catch (err) {
       toast.error(err.response.data.error);
-      setUser({ name: '', isUser: false });
+      setUser({ name: '', isUser: false, id: null });
     }
   };
 
@@ -330,7 +338,7 @@ function App() {
           </div>
           <h2 className="heading"> Studdy Buddy</h2>
           <div>
-            <MainLayout />
+            <MainLayout id={user.id} />
           </div>
         </>
       ) : (
