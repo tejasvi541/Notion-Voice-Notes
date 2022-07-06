@@ -132,7 +132,7 @@ function MainLayout(props) {
       case `Your Notes`:
         return (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <MyNotes notes={userNotes} />
+            <MyNotes fetchUserNotes={fetchUserNotes} notes={userNotes} />
           </div>
         );
       default:

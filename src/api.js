@@ -18,3 +18,7 @@ export const register = (data) =>
 export const getNotes = (id) => server.get(`${url}/api/v1/note/getNote/${id}`);
 export const postNote = (data) =>
   server.post(`${url}/api/v1/note/postNote`, data);
+export const deleteNote = (id) =>
+  server.delete(`${url}/api/v1/note/deleteNote/${id}`);
+
+// /deleteNote/:id

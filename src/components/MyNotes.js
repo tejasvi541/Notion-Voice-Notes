@@ -3,7 +3,7 @@ import { Card } from '@material-ui/core';
 import NotesCard from './NotesCard';
 
 function MyNotes(props) {
-  const { notes } = props;
+  const { notes, fetchUserNotes } = props;
   return (
     <Card
       style={{
@@ -21,7 +21,13 @@ function MyNotes(props) {
       ) : (
         <>
           {notes.map((item, i) => (
-            <NotesCard key={i} createdAt={item.createdAt} text={item.text} />
+            <NotesCard
+              fetchUserNotes={fetchUserNotes}
+              id={item._id}
+              key={i}
+              createdAt={item.createdAt}
+              text={item.text}
+            />
           ))}
         </>
       )}
